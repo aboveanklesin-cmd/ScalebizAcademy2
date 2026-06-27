@@ -1,0 +1,50 @@
+[build]
+  publish = "."
+
+# ── Clean URLs — removes .html from all pages ─────────────────────
+
+# Redirect .html → clean URL (permanent)
+[[redirects]]
+  from = "/dashboard.html"
+  to   = "/dashboard"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/test.html"
+  to   = "/test"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/admin.html"
+  to   = "/admin"
+  status = 301
+  force = true
+
+# Serve clean URLs → actual .html files (rewrite, URL stays clean)
+[[redirects]]
+  from = "/dashboard"
+  to   = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/test"
+  to   = "/test.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to   = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to   = "/blog/index.html"
+  status = 200
+
+# ── Catch-all ─────────────────────────────────────────────────────
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

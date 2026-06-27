@@ -1,0 +1,55 @@
+/* ScaleBiz Academy — Blog Styles */
+
+:root{--lime:#C8F135;--purple:#6B4EFF;--coral:#FF5C3A;--ink:#0F0E17;--paper:#FAFAF7;--mid:#F0EFE8;--muted:#6B6A63;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Nunito',sans-serif;font-size:17px;line-height:1.75;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:var(--paper);border-bottom:1.5px solid var(--ink);position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1;}
+.nav-logo-text span:first-child{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;color:var(--ink);}
+.nav-logo-text span:last-child{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;color:var(--purple);}
+.nav-cta{background:var(--ink);color:var(--lime);font-family:'Bebas Neue',sans-serif;letter-spacing:0.08em;font-size:0.9rem;padding:0.5rem 1.25rem;border-radius:100px;text-decoration:none;}
+
+/* ARTICLE */
+.article-wrap{max-width:720px;margin:0 auto;padding:3rem 5% 5rem;}
+.article-eyebrow{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:12px;}
+.article-tag{background:var(--lime);color:var(--ink);padding:2px 10px;border-radius:20px;font-size:0.65rem;font-weight:700;}
+.article-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,5vw,3.8rem);line-height:0.95;letter-spacing:0.02em;margin-bottom:1.25rem;}
+.article-h1 em{font-style:normal;color:var(--purple);}
+.article-meta{display:flex;align-items:center;gap:16px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1.5px solid var(--ink);}
+.article-meta span{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);}
+.article-body h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.03em;margin:2rem 0 0.75rem;}
+.article-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.03em;margin:1.5rem 0 0.5rem;}
+.article-body p{margin-bottom:1.25rem;color:#2a2a30;}
+.article-body ul,.article-body ol{margin:0 0 1.25rem 1.5rem;}
+.article-body li{margin-bottom:0.4rem;color:#2a2a30;}
+.article-body strong{font-weight:700;color:var(--ink);}
+.article-body blockquote{border-left:4px solid var(--lime);padding:0.75rem 1.25rem;background:var(--mid);border-radius:0 12px 12px 0;margin:1.5rem 0;font-style:italic;color:var(--muted);}
+.article-body .highlight-box{background:var(--ink);color:var(--paper);border-radius:16px;padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.article-body .highlight-box p{color:#B4B2A9;margin:0;}
+.article-body .highlight-box strong{color:var(--lime);}
+
+/* CTA BOX */
+.article-cta{background:var(--lime);border:1.5px solid var(--ink);border-radius:20px;padding:2rem;margin-top:3rem;text-align:center;}
+.article-cta h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.03em;margin-bottom:0.5rem;}
+.article-cta p{font-size:0.9rem;color:#3a3a30;margin-bottom:1.25rem;}
+.article-cta a{background:var(--ink);color:var(--lime);font-family:'Bebas Neue',sans-serif;letter-spacing:0.06em;font-size:1rem;padding:0.7rem 1.75rem;border-radius:100px;text-decoration:none;display:inline-block;}
+
+/* BLOG INDEX */
+.blog-hero{max-width:1100px;margin:0 auto;padding:3rem 5% 1rem;}
+.blog-hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,5rem);letter-spacing:0.02em;line-height:0.95;margin-bottom:1rem;}
+.blog-hero h1 em{font-style:normal;color:var(--purple);}
+.blog-hero p{font-size:1rem;color:var(--muted);max-width:540px;}
+.blog-grid{max-width:1100px;margin:0 auto;padding:2rem 5% 5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;}
+.blog-card{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:1.75rem;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:10px;transition:transform 0.15s,box-shadow 0.15s;}
+.blog-card:hover{transform:translateY(-3px);box-shadow:4px 4px 0 var(--ink);}
+.bc-tag{display:inline-block;font-family:'Space Mono',monospace;font-size:0.62rem;padding:3px 10px;border-radius:20px;border:1px solid var(--ink);color:var(--muted);width:fit-content;}
+.bc-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.02em;line-height:1.1;}
+.bc-desc{font-size:0.85rem;color:var(--muted);line-height:1.6;}
+.bc-meta{font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:auto;}
+
+footer{border-top:1.5px solid var(--ink);padding:2rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;}
+.footer-text{font-size:0.78rem;color:var(--muted);font-family:'Space Mono',monospace;}

@@ -1,0 +1,25 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/test",      "destination": "/test.html"      },
+    { "source": "/admin",     "destination": "/admin.html"     },
+    { "source": "/blog",      "destination": "/blog/index.html"}
+  ],
+  "redirects": [
+    { "source": "/dashboard.html", "destination": "/dashboard", "permanent": true },
+    { "source": "/test.html",      "destination": "/test",      "permanent": true },
+    { "source": "/admin.html",     "destination": "/admin",     "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options",        "value": "DENY"    },
+        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}

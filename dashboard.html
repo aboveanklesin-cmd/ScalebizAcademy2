@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Dashboard — ScaleBiz Academy</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--lime:#C8F135;--purple:#6B4EFF;--coral:#FF5C3A;--ink:#0F0E17;--paper:#FAFAF7;--mid:#F0EFE8;--muted:#6B6A63;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--paper);color:var(--ink);font-family:'Nunito',sans-serif;min-height:100vh;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:var(--paper);border-bottom:1.5px solid var(--ink);position:sticky;top:0;z-index:100;}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .nav-logo-text{display:flex;flex-direction:column;line-height:1;}
+    .nav-logo-text span:first-child{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;color:var(--ink);}
+    .nav-logo-text span:last-child{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;color:var(--purple);}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .nav-user{font-size:0.78rem;color:var(--muted);font-family:'Space Mono',monospace;}
+    .btn-logout{background:none;border:1.5px solid var(--ink);border-radius:100px;padding:0.4rem 1rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;font-size:0.85rem;cursor:pointer;color:var(--ink);transition:background 0.15s;}
+    .btn-logout:hover{background:var(--mid);}
+
+    .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:1rem;}
+    .spinner{width:36px;height:36px;border:3px solid var(--mid);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .main{max-width:1100px;margin:0 auto;padding:2.5rem 5% 5rem;}
+
+    /* WELCOME */
+    .welcome{background:var(--ink);border-radius:20px;padding:1.75rem 2rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:relative;overflow:hidden;}
+    .wb-web{position:absolute;right:-20px;top:-20px;opacity:0.07;}
+    .wb-eyebrow{font-family:'Space Mono',monospace;font-size:0.63rem;color:#7F77DD;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;}
+    .wb-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.03em;color:var(--paper);line-height:1;}
+    .wb-sub{font-size:0.82rem;color:#9A9890;margin-top:4px;}
+    .wb-level{background:#1A1929;border:1px solid #3C3489;border-radius:14px;padding:0.75rem 1.25rem;text-align:center;flex-shrink:0;}
+    .wb-level-label{font-family:'Space Mono',monospace;font-size:0.58rem;color:#7F77DD;text-transform:uppercase;letter-spacing:0.06em;}
+    .wb-level-name{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--lime);letter-spacing:0.04em;line-height:1.1;margin-top:2px;}
+
+    /* GRID */
+    .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+    .section-label{font-family:'Space Mono',monospace;font-size:0.63rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem;}
+    .card{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:1.5rem;}
+
+    /* LEVEL LADDER */
+    .level-item{display:flex;align-items:flex-start;gap:12px;padding:0.9rem 0;border-bottom:1px solid #F0EFE8;}
+    .level-item:last-child{border-bottom:none;}
+    .li-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1.5px solid;}
+    .li-icon.done{border-color:var(--lime);background:#C8F13518;}
+    .li-icon.current{border-color:var(--purple);background:#6B4EFF18;animation:pulse 2s ease-in-out infinite;}
+    .li-icon.locked{border-color:#D3D1C7;background:transparent;opacity:0.4;}
+    .li-icon.unlocked{border-color:var(--purple);background:#EEEDFE;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 #6B4EFF33}50%{box-shadow:0 0 0 6px #6B4EFF00}}
+    .li-body{flex:1;min-width:0;}
+    .li-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.03em;margin-bottom:2px;}
+    .li-sub{font-size:0.75rem;color:var(--muted);font-family:'Space Mono',monospace;}
+    .li-action{flex-shrink:0;}
+    .btn-sm{font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;font-size:0.8rem;padding:0.4rem 1rem;border-radius:100px;border:none;cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-block;}
+    .btn-sm.take{background:var(--purple);color:#fff;}
+    .btn-sm.take:hover{background:#5038EE;}
+    .btn-sm.done{background:#E1F5EE;color:#085041;cursor:default;}
+
+    /* PROGRESS */
+    .progress-wrap{margin-top:1rem;padding-top:1rem;border-top:1px solid #F0EFE8;}
+    .progress-bar{height:7px;background:#F0EFE8;border-radius:4px;overflow:hidden;margin-bottom:6px;}
+    .progress-fill{height:100%;background:var(--lime);border-radius:4px;transition:width 0.8s ease;}
+    .progress-label{font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);display:flex;justify-content:space-between;}
+
+    /* BADGES */
+    .badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .badge-item{border:1.5px solid var(--ink);border-radius:14px;padding:0.85rem 0.5rem;text-align:center;transition:transform 0.15s,box-shadow 0.15s;}
+    .badge-item:hover{transform:translateY(-2px);box-shadow:3px 3px 0 var(--ink);}
+    .badge-item.locked{border-color:#E8E7E0;opacity:0.35;}
+    .badge-emoji{font-size:1.4rem;margin-bottom:3px;}
+    .badge-name{font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:0.02em;}
+    .badge-status{font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);margin-top:2px;}
+    .badge-status.earned{color:#1D9E75;}
+
+    /* PRICING */
+    .pricing-section{grid-column:1/-1;}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:0.75rem;}
+    .price-card{border:1.5px solid var(--ink);border-radius:18px;padding:1.25rem;background:#fff;text-align:center;}
+    .price-card.featured{border:2px solid var(--purple);background:#EEEDFE;}
+    .price-card.owned{border-color:#1D9E75;background:#E1F5EE;}
+    .price-badge-tag{font-size:0.62rem;font-family:'Space Mono',monospace;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;}
+    .price-badge-tag.best{background:#EEEDFE;color:#3C3489;}
+    .price-badge-tag.owned-tag{background:#E1F5EE;color:#085041;}
+    .price-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.03em;margin-bottom:4px;}
+    .price-amount{font-size:1.8rem;font-weight:700;font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;color:var(--ink);margin-bottom:6px;}
+    .price-unlocks{font-size:0.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+    .btn-buy{width:100%;font-family:'Bebas Neue',sans-serif;letter-spacing:0.06em;font-size:0.9rem;padding:0.6rem;border-radius:100px;border:none;cursor:pointer;transition:all 0.15s;}
+    .btn-buy.active{background:var(--ink);color:var(--lime);}
+    .btn-buy.active:hover{background:var(--purple);}
+    .btn-buy.disabled{background:var(--mid);color:var(--muted);cursor:default;}
+
+    /* SPIDY */
+    .spidy-card{background:var(--ink);border-radius:20px;padding:1.5rem;grid-column:1/-1;text-align:center;}
+    .spidy-icon{font-size:2.5rem;margin-bottom:0.5rem;}
+    .spidy-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;color:var(--lime);}
+    .spidy-sub{font-size:0.8rem;color:#9A9890;max-width:380px;margin:0.4rem auto 1rem;line-height:1.65;}
+    .spidy-bar{height:6px;background:#1e1d2e;border-radius:3px;margin:0 auto 6px;max-width:280px;overflow:hidden;}
+    .spidy-fill{height:100%;background:var(--purple);border-radius:3px;transition:width 0.8s ease;}
+    .spidy-label{font-family:'Space Mono',monospace;font-size:0.62rem;color:#7F77DD;}
+
+    @media(max-width:768px){
+      .dash-grid{grid-template-columns:1fr;}
+      .pricing-grid{grid-template-columns:1fr;}
+      .badges-grid{grid-template-columns:repeat(2,1fr);}
+      .spidy-card,.pricing-section{grid-column:1;}
+      .nav-user{display:none;}
+    }
+  
+    /* ── DIGITAL SPIDY MODE ─────────────────────────────────────────── */
+    body.is-spidy { background: #0F0E17; color: #FAFAF7; }
+    body.is-spidy nav { background: #0F0E17; border-bottom-color: #2E2D3D; }
+    body.is-spidy .nav-logo-text span:first-child { color: #FAFAF7; }
+    body.is-spidy .btn-logout { border-color: #2E2D3D; color: #9A9890; }
+    body.is-spidy .btn-logout:hover { background: #1A1929; }
+
+    /* Animated web background */
+    .spidy-bg { display:none; position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+    body.is-spidy .spidy-bg { display:block; }
+    .spidy-bg svg { width:100%; height:100%; opacity:0.06; animation:rotateweb 60s linear infinite; transform-origin:center; }
+    @keyframes rotateweb { from{transform:rotate(0deg) scale(1.2)} to{transform:rotate(360deg) scale(1.2)} }
+
+    /* Floating particles */
+    .particle { position:fixed; pointer-events:none; z-index:0; font-size:1rem; animation:floatup 6s ease-in infinite; opacity:0; }
+    @keyframes floatup {
+      0%   { opacity:0; transform:translateY(0) rotate(0deg); }
+      10%  { opacity:1; }
+      90%  { opacity:0.5; }
+      100% { opacity:0; transform:translateY(-100vh) rotate(720deg); }
+    }
+
+    body.is-spidy .main { position:relative; z-index:1; }
+
+    /* Spidy welcome banner */
+    body.is-spidy .welcome {
+      background: linear-gradient(135deg, #1A1929 0%, #0F0E17 100%);
+      border: 2px solid #6B4EFF;
+      box-shadow: 0 0 40px #6B4EFF33, 0 0 80px #C8F13511;
+      animation: glowpulse 3s ease-in-out infinite;
+    }
+    @keyframes glowpulse {
+      0%,100% { box-shadow: 0 0 40px #6B4EFF33, 0 0 80px #C8F13511; }
+      50%      { box-shadow: 0 0 60px #6B4EFF55, 0 0 120px #C8F13522; }
+    }
+    body.is-spidy .wb-name { color: #C8F135; font-size:2.8rem; }
+    body.is-spidy .wb-level { background: linear-gradient(135deg,#3C3489,#1A1929); border-color:#C8F135; }
+    body.is-spidy .wb-level-name { font-size:1.6rem; color:#C8F135; animation:textglow 2s ease-in-out infinite; }
+    @keyframes textglow {
+      0%,100% { text-shadow: 0 0 10px #C8F13566; }
+      50%      { text-shadow: 0 0 25px #C8F135CC, 0 0 50px #C8F13544; }
+    }
+
+    /* Spidy stat cards */
+    body.is-spidy .stat-card { background:#16151F; border-color:#2E2D3D; }
+    body.is-spidy .stat-val { color:#C8F135; }
+    body.is-spidy .stat-lbl { color:#7F77DD; }
+
+    /* Spidy level ladder */
+    body.is-spidy .card { background:#16151F; border-color:#2E2D3D; }
+    body.is-spidy .level-item { border-bottom-color:#2E2D3D; }
+    body.is-spidy .li-name { color:#FAFAF7; }
+    body.is-spidy .li-sub { color:#7F77DD; }
+    body.is-spidy .li-icon.done { border-color:#C8F135; background:#C8F13518; }
+
+    /* Spidy badge items */
+    body.is-spidy .badge-item { background:#16151F; border-color:#2E2D3D; }
+    body.is-spidy .badge-item:hover { box-shadow:3px 3px 0 #6B4EFF; border-color:#6B4EFF; }
+    body.is-spidy .badge-name { color:#FAFAF7; }
+    body.is-spidy .badge-item.locked { opacity:0.2; }
+
+    /* Spidy hero section */
+    .spidy-hero { display:none; background:linear-gradient(135deg,#1A1929,#0F0E17); border:2px solid #6B4EFF; border-radius:24px; padding:3rem 2rem; text-align:center; margin-bottom:2rem; position:relative; overflow:hidden; }
+    body.is-spidy .spidy-hero { display:block; }
+    .spidy-hero-web { position:absolute; inset:0; opacity:0.08; }
+    .spidy-hero-emoji { font-size:5rem; margin-bottom:1rem; display:block; animation:spidybounce 2s ease-in-out infinite; }
+    @keyframes spidybounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-12px) scale(1.1)} }
+    .spidy-hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,8vw,6rem); letter-spacing:0.04em; color:#C8F135; line-height:1; margin-bottom:0.5rem; animation:textglow 2s ease-in-out infinite; position:relative; z-index:1; }
+    .spidy-hero-sub { font-size:1rem; color:#9A9890; max-width:480px; margin:0.75rem auto 1.5rem; line-height:1.7; position:relative; z-index:1; }
+    .spidy-hero-badges { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; position:relative; z-index:1; }
+    .spidy-hero-badge { font-family:'Space Mono',monospace; font-size:0.65rem; padding:5px 14px; border-radius:20px; background:#3C3489; color:#CECBF6; border:1px solid #6B4EFF44; }
+    .spidy-hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+    .spidy-share-btn { font-family:'Bebas Neue',sans-serif; letter-spacing:0.06em; font-size:1rem; padding:0.7rem 1.75rem; border-radius:100px; border:none; cursor:pointer; background:#C8F135; color:#0F0E17; transition:opacity 0.15s; }
+    .spidy-share-btn:hover { opacity:0.88; }
+    .spidy-share-btn.outline { background:transparent; color:#C8F135; border:1.5px solid #C8F135; }
+
+    /* Rank card */
+    .spidy-rank { display:none; background:#16151F; border:1.5px solid #3C3489; border-radius:20px; padding:1.5rem; text-align:center; margin-bottom:1.5rem; }
+    body.is-spidy .spidy-rank { display:block; }
+    .spidy-rank-label { font-family:'Space Mono',monospace; font-size:0.65rem; color:#7F77DD; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
+    .spidy-rank-val { font-family:'Bebas Neue',sans-serif; font-size:3.5rem; color:#C8F135; letter-spacing:0.04em; line-height:1; animation:textglow 2s ease-in-out infinite; }
+    .spidy-rank-sub { font-size:0.8rem; color:#9A9890; margin-top:4px; }
+
+    /* Celebration overlay */
+    .celebration { display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,14,23,0.95); flex-direction:column; align-items:center; justify-content:center; }
+    .celebration.show { display:flex; }
+    .celebration-spider { font-size:6rem; animation:spidybounce 1s ease-in-out infinite; margin-bottom:1rem; }
+    .celebration-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,10vw,7rem); color:#C8F135; letter-spacing:0.04em; animation:textglow 1.5s ease-in-out infinite; margin-bottom:0.5rem; text-align:center; }
+    .celebration-sub { font-size:1rem; color:#9A9890; margin-bottom:2rem; text-align:center; }
+    .celebration-close { font-family:'Bebas Neue',sans-serif; letter-spacing:0.06em; font-size:1rem; padding:0.75rem 2rem; border-radius:100px; border:none; cursor:pointer; background:#C8F135; color:#0F0E17; }
+
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 108 108" fill="none">
+      <rect x="4" y="66" width="22" height="36" rx="4" fill="#6B4EFF"/>
+      <rect x="30" y="50" width="22" height="52" rx="4" fill="#0F0E17"/>
+      <rect x="56" y="28" width="22" height="74" rx="4" fill="#0F0E17"/>
+      <rect x="82" y="40" width="22" height="62" rx="4" fill="#FF5C3A"/>
+      <path d="M15 66 L41 50 L67 28 L93 40" stroke="#6B4EFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="8 5"/>
+      <circle cx="93" cy="40" r="6" fill="#6B4EFF"/>
+    </svg>
+    <div class="nav-logo-text"><span>ScaleBiz</span><span>Academy</span></div>
+  </a>
+  <div class="nav-right">
+    <span class="nav-user" id="navEmail"></span>
+    <button class="btn-logout" onclick="logout()">Log out</button>
+  </div>
+</nav>
+
+
+<!-- Digital Spidy animated background -->
+<div class="spidy-bg">
+  <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#AFA9EC" stroke-width="0.8" fill="none">
+      <line x1="400" y1="0" x2="400" y2="800"/>
+      <line x1="0" y1="400" x2="800" y2="400"/>
+      <line x1="0" y1="0" x2="800" y2="800"/>
+      <line x1="800" y1="0" x2="0" y2="800"/>
+      <line x1="200" y1="0" x2="600" y2="800"/>
+      <line x1="600" y1="0" x2="200" y2="800"/>
+      <circle cx="400" cy="400" r="80"/>
+      <circle cx="400" cy="400" r="160"/>
+      <circle cx="400" cy="400" r="240"/>
+      <circle cx="400" cy="400" r="320"/>
+      <circle cx="400" cy="400" r="400"/>
+    </g>
+  </svg>
+</div>
+
+<!-- Celebration overlay (shown once when first becoming Spidy) -->
+<div class="celebration" id="celebration">
+  <div class="celebration-spider">🕷️</div>
+  <div class="celebration-title">Digital Spidy!</div>
+  <div class="celebration-sub">You've reached the top 3%. The web is yours.</div>
+  <button class="celebration-close" onclick="document.getElementById('celebration').classList.remove('show')">Enter the web →</button>
+</div>
+
+<!-- Spidy hero (replaces regular welcome for Spidy members) -->
+<div class="spidy-hero" id="spidyHero">
+  <svg class="spidy-hero-web" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#AFA9EC" stroke-width="0.6" fill="none">
+      <line x1="200" y1="0" x2="200" y2="400"/>
+      <line x1="0" y1="200" x2="400" y2="200"/>
+      <line x1="0" y1="0" x2="400" y2="400"/>
+      <line x1="400" y1="0" x2="0" y2="400"/>
+      <circle cx="200" cy="200" r="50"/><circle cx="200" cy="200" r="100"/>
+      <circle cx="200" cy="200" r="150"/><circle cx="200" cy="200" r="200"/>
+    </g>
+  </svg>
+  <span class="spidy-hero-emoji">🕷️</span>
+  <div class="spidy-hero-title" id="spidyHeroName">Digital Spidy</div>
+  <div class="spidy-hero-sub">You've mastered Performance + Influencer Marketing and joined the top 3% of marketers on ScaleBiz Academy. The web is yours.</div>
+  <div class="spidy-hero-badges">
+    <span class="spidy-hero-badge">✅ All 6 levels complete</span>
+    <span class="spidy-hero-badge">🏅 12 badges earned</span>
+    <span class="spidy-hero-badge">🌐 Verified credential</span>
+    <span class="spidy-hero-badge">📊 Top 3% globally</span>
+  </div>
+  <div class="spidy-hero-actions">
+    <button class="spidy-share-btn" onclick="shareSpidy()">Share on LinkedIn →</button>
+    <button class="spidy-share-btn outline" onclick="window.print()">Download certificate</button>
+  </div>
+</div>
+
+<!-- Rank card -->
+<div class="spidy-rank">
+  <div class="spidy-rank-label">Your global rank</div>
+  <div class="spidy-rank-val">Top 3%</div>
+  <div class="spidy-rank-sub">ScaleBiz Academy · Digital Spidy · Verified</div>
+</div>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="spinner"></div>
+</div>
+
+<div class="main" id="dashMain" style="display:none;">
+
+  <!-- WELCOME -->
+  <div class="welcome">
+    <svg class="wb-web" width="160" height="160" viewBox="0 0 200 200" fill="none">
+      <g stroke="#AFA9EC" stroke-width="0.6" fill="none">
+        <line x1="100" y1="0" x2="100" y2="200"/><line x1="0" y1="100" x2="200" y2="100"/>
+        <line x1="0" y1="0" x2="200" y2="200"/><line x1="200" y1="0" x2="0" y2="200"/>
+        <circle cx="100" cy="100" r="30"/><circle cx="100" cy="100" r="65"/>
+        <circle cx="100" cy="100" r="100"/><circle cx="100" cy="100" r="140"/>
+      </g>
+    </svg>
+    <div>
+      <div class="wb-eyebrow">Welcome back</div>
+      <div class="wb-name" id="wbName">—</div>
+      <div class="wb-sub" id="wbSub">—</div>
+    </div>
+    <div class="wb-level">
+      <div class="wb-level-label">Current level</div>
+      <div class="wb-level-name" id="wbLevel">—</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+
+    <!-- LEVEL LADDER -->
+    <div>
+      <div class="section-label">Your journey</div>
+      <div class="card" id="ladderCard">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- BADGES -->
+    <div>
+      <div class="section-label">Badges</div>
+      <div class="card">
+        <div class="badges-grid" id="badgesGrid"></div>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="pricing-section">
+      <div class="section-label">Unlock courses</div>
+      <div class="pricing-grid">
+        <div class="price-card" id="pcPerf">
+          <div class="price-name">Performance Marketing</div>
+          <div class="price-amount">₹1,000</div>
+          <div class="price-unlocks">Unlocks levels 2 + 3<br>Signal Spotter · Campaign Builder</div>
+          <button class="btn-buy active" onclick="startPayment('performance',1000)" id="buyPerf">Buy course →</button>
+        </div>
+        <div class="price-card featured" id="pcBoth">
+          <div class="price-badge-tag best">Best value — save ₹500</div>
+          <div class="price-name">Both tracks</div>
+          <div class="price-amount">₹1,500</div>
+          <div class="price-unlocks">Unlocks all levels<br>Rookie → Digital Spidy</div>
+          <button class="btn-buy active" onclick="startPayment('both',1500)" id="buyBoth">Buy both →</button>
+        </div>
+        <div class="price-card" id="pcInf">
+          <div class="price-name">Influencer Marketing</div>
+          <div class="price-amount">₹1,200</div>
+          <div class="price-unlocks">Unlocks levels 4 + 5<br>Growth Operator · Viral Architect</div>
+          <button class="btn-buy active" onclick="startPayment('influencer',1200)" id="buyInf">Buy course →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIGITAL SPIDY -->
+    <div class="spidy-card">
+      <div class="spidy-icon">🕷️</div>
+      <div class="spidy-title">Digital Spidy</div>
+      <div class="spidy-sub">Complete all levels across both tracks to earn the most exclusive badge on ScaleBiz Academy. Less than 3% ever get here.</div>
+      <div class="spidy-bar"><div class="spidy-fill" id="spidyFill" style="width:8%"></div></div>
+      <div class="spidy-label" id="spidyLabel">1 / 5 levels complete</div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script>
+const LEVELS = [
+  { num:1, name:'Rookie Marketer',  icon:'🌱', track:'free',        badge:'Rookie Marketer'  },
+  { num:2, name:'Signal Spotter',   icon:'📡', track:'performance', badge:'Signal Spotter'   },
+  { num:3, name:'Campaign Builder', icon:'⚙️', track:'performance', badge:'Campaign Builder' },
+  { num:4, name:'Growth Operator',  icon:'🔥', track:'influencer',  badge:'Growth Operator'  },
+  { num:5, name:'Viral Architect',  icon:'🧠', track:'influencer',  badge:'Viral Architect'  },
+  { num:6, name:'Digital Spidy',    icon:'🕷️', track:'both',        badge:'Digital Spidy'    },
+];
+
+const BADGES_ALL = [
+  { name:'Rookie Marketer',  emoji:'🌱' },
+  { name:'Signal Spotter',   emoji:'📡' },
+  { name:'Campaign Builder', emoji:'⚙️' },
+  { name:'Growth Operator',  emoji:'🔥' },
+  { name:'Viral Architect',  emoji:'🧠' },
+  { name:'Digital Spidy',    emoji:'🕷️' },
+];
+
+// ── Razorpay Payment Links — paste your links from Razorpay dashboard ──
+const PAYMENT_LINKS = {
+  performance: 'https://rzp.io/rzp/VfHWmQUK',
+  influencer:  'https://rzp.io/rzp/By4xdE1',
+  both:        'https://rzp.io/rzp/kXgDYDK8',
+};
+
+let student = null;
+let earnedBadges = [];
+
+function canAccess(level, payStatus) {
+  if(level.num === 1) return true;
+  if(level.track === 'performance') return payStatus === 'perf_only' || payStatus === 'both';
+  if(level.track === 'influencer')  return payStatus === 'inf_only'  || payStatus === 'both';
+  if(level.track === 'both')        return payStatus === 'both';
+  return false;
+}
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session) { window.location.href = '/'; return; }
+
+  // Show payment pending banner if returning from Razorpay
+  const pendingCourse = sessionStorage.getItem('sb_pending_course');
+  if(pendingCourse) {
+    sessionStorage.removeItem('sb_pending_course');
+    showPaymentPendingBanner();
+  }
+
+  document.getElementById('navEmail').textContent = session.user.email;
+
+  const { data: s } = await sb.from('students').select('*').eq('auth_id', session.user.id).single();
+  if(!s) { window.location.href = '/'; return; }
+  student = s;
+
+  const { data: badges } = await sb.from('badges').select('*').eq('student_id', s.id);
+  const { data: attempts } = await sb.from('mcq_attempts').select('*').eq('student_id', s.id).eq('passed', true);
+  const { data: attendanceData } = await sb.from('attendance').select('module_id').eq('student_id', s.id);
+  const attendedModules = (attendanceData || []).map(a => a.module_id);
+
+  // Map level to required module attendance
+  const levelModuleMap = { 2:'mod1', 3:'mod2', 4:'mod4', 5:'mod6' };
+  earnedBadges = (badges || []).map(b => b.badge_name);
+  const passedLevels = [...new Set((attempts || []).map(a => a.level))];
+
+  // Welcome
+  document.getElementById('wbName').textContent = s.first_name + ' ' + s.last_name;
+  const trackLabel = s.track === 'both' ? 'Both tracks' : s.track === 'performance' ? 'Performance Marketing' : 'Influencer Marketing';
+  document.getElementById('wbSub').textContent = 'Track: ' + trackLabel;
+  const curLevel = LEVELS.find(l => l.num === (s.current_level || 1)) || LEVELS[0];
+  document.getElementById('wbLevel').textContent = curLevel.name;
+
+  // Pricing cards — hide bought options
+  const ps = s.payment_status || 'free';
+  if(ps === 'perf_only' || ps === 'both') {
+    document.getElementById('pcPerf').classList.add('owned');
+    document.getElementById('pcPerf').querySelector('.price-name').insertAdjacentHTML('afterbegin','<div class="price-badge-tag owned-tag">✓ Owned</div>');
+    document.getElementById('buyPerf').textContent = 'Enrolled ✓';
+    document.getElementById('buyPerf').classList.replace('active','disabled');
+    document.getElementById('buyPerf').onclick = null;
+  }
+  if(ps === 'inf_only' || ps === 'both') {
+    document.getElementById('pcInf').classList.add('owned');
+    document.getElementById('pcInf').querySelector('.price-name').insertAdjacentHTML('afterbegin','<div class="price-badge-tag owned-tag">✓ Owned</div>');
+    document.getElementById('buyInf').textContent = 'Enrolled ✓';
+    document.getElementById('buyInf').classList.replace('active','disabled');
+    document.getElementById('buyInf').onclick = null;
+  }
+  if(ps === 'both') {
+    document.getElementById('pcBoth').classList.add('owned');
+    document.getElementById('buyBoth').textContent = 'All enrolled ✓';
+    document.getElementById('buyBoth').classList.replace('active','disabled');
+    document.getElementById('buyBoth').onclick = null;
+  }
+
+  // Level ladder
+  const ladder = document.getElementById('ladderCard');
+  ladder.innerHTML = '';
+  LEVELS.forEach(lv => {
+    const accessible = canAccess(lv, ps);
+    const passed = passedLevels.includes(lv.num) || lv.num === 1;
+    const isCurrent = lv.num === (s.current_level || 1) && !passed;
+
+    let iconClass = 'locked';
+    if(passed || lv.num === 1) iconClass = 'done';
+    else if(accessible) iconClass = 'unlocked';
+
+    const requiredModule = levelModuleMap[lv.num];
+    const hasAttended = !requiredModule || attendedModules.includes(requiredModule);
+
+    let actionHTML = '';
+    if(passed || lv.num === 1) {
+      actionHTML = '<span class="btn-sm done">✓ Done</span>';
+    } else if(accessible && hasAttended) {
+      actionHTML = `<a href="/test?level=${lv.num}" class="btn-sm take">Take test →</a>`;
+    } else if(accessible && !hasAttended) {
+      actionHTML = '<span style="font-size:0.7rem;color:var(--purple);font-family:\'Space Mono\',monospace;background:#EEEDFE;padding:4px 10px;border-radius:20px;border:1px solid #AFA9EC;">📅 attend class first</span>';
+    } else {
+      actionHTML = '<span style="font-size:0.7rem;color:var(--muted);font-family:\'Space Mono\',monospace;">🔒 locked</span>';
+    }
+
+    const div = document.createElement('div');
+    div.className = 'level-item';
+    div.innerHTML = `
+      <div class="li-icon ${iconClass}">${lv.icon}</div>
+      <div class="li-body">
+        <div class="li-name">${lv.name}</div>
+        <div class="li-sub">Level ${lv.num}${lv.track !== 'free' && lv.track !== 'both' ? ' · ' + (lv.track === 'performance' ? 'Performance' : 'Influencer') : ''}</div>
+      </div>
+      <div class="li-action">${actionHTML}</div>`;
+    ladder.appendChild(div);
+  });
+
+  // Progress
+  const totalLevels = 5;
+  const doneCount = passedLevels.length + 1; // +1 for rookie
+  const pct = Math.round((doneCount / totalLevels) * 100);
+  ladder.insertAdjacentHTML('beforeend', `
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-label"><span>${doneCount} / ${totalLevels} levels</span><span>${pct}%</span></div>
+    </div>`);
+
+  // Badges grid
+  const grid = document.getElementById('badgesGrid');
+  grid.innerHTML = '';
+  BADGES_ALL.forEach(b => {
+    const earned = earnedBadges.includes(b.name);
+    const div = document.createElement('div');
+    div.className = 'badge-item' + (earned ? '' : ' locked');
+    div.innerHTML = `
+      <div class="badge-emoji">${b.emoji}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-status ${earned ? 'earned' : ''}">${earned ? '✓ earned' : 'locked'}</div>`;
+    grid.appendChild(div);
+  });
+
+  // Spidy progress
+  const spidyPct = Math.round((passedLevels.length / 5) * 100);
+  document.getElementById('spidyFill').style.width = spidyPct + '%';
+  document.getElementById('spidyLabel').textContent = passedLevels.length + ' / 5 levels complete';
+
+  // Activate Spidy mode if earned
+  const isSpidy = earnedBadges.includes('Digital Spidy');
+  if (isSpidy) {
+    const wasSpidy = localStorage.getItem('sb_was_spidy');
+    activateSpidyMode(s.first_name + ' ' + s.last_name, !wasSpidy);
+    localStorage.setItem('sb_was_spidy', '1');
+  }
+
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('dashMain').style.display = 'block';
+}
+
+async function startPayment(type, amount) {
+  // Save pending intent
+  await sb.from('students').update({
+    razorpay_order_id: 'pending_' + type + '_' + Date.now()
+  }).eq('id', student.id);
+
+  // Store what they bought so we can show message on return
+  sessionStorage.setItem('sb_pending_course', type);
+  window.location.href = PAYMENT_LINKS[type];
+}
+
+function showPaymentPendingBanner() {
+  const existing = document.getElementById('paymentBanner');
+  if (existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'paymentBanner';
+  banner.style.cssText = `
+    background:#0F0E17;color:#C8F135;
+    font-family:'Space Mono',monospace;font-size:0.75rem;
+    padding:0.85rem 5%;display:flex;align-items:center;
+    justify-content:space-between;gap:1rem;flex-wrap:wrap;
+    border-bottom:1.5px solid #3C3489;position:relative;z-index:10;`;
+  banner.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:1.1rem;">✅</span>
+      <span>
+        <strong style="color:#C8F135;">Payment received!</strong>
+        &nbsp;You will receive a confirmation email with your class schedule and Zoom link
+        once enrolled. Your levels will unlock shortly — refresh after a few hours.
+      </span>
+    </div>
+    <button onclick="document.getElementById('paymentBanner').remove()"
+      style="background:none;border:1px solid #3C3489;color:#7F77DD;
+      border-radius:20px;padding:3px 12px;cursor:pointer;
+      font-family:'Space Mono',monospace;font-size:0.65rem;flex-shrink:0;">
+      Dismiss ✕
+    </button>`;
+  const nav = document.querySelector('nav');
+  if (nav) nav.insertAdjacentElement('afterend', banner);
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  window.location.href = '/';
+}
+
+init();
+
+
+// ── Digital Spidy mode ────────────────────────────────────────────
+function activateSpidyMode(studentName, isNewSpidy) {
+  document.body.classList.add('is-spidy');
+
+  // Update hero name
+  const heroName = document.getElementById('spidyHeroName');
+  if (heroName) heroName.textContent = studentName + ' is a Digital Spidy';
+
+  // Hide regular welcome banner
+  const welcome = document.querySelector('.welcome');
+  if (welcome) welcome.style.display = 'none';
+
+  // Add floating spider particles
+  const emojis = ['🕷️','⚡','🌐','✨','🏅','💜'];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left  = Math.random() * 100 + 'vw';
+    p.style.top   = '100vh';
+    p.style.animationDelay = (Math.random() * 5) + 's';
+    p.style.animationDuration = (4 + Math.random() * 4) + 's';
+    document.body.appendChild(p);
+  }
+
+  // Show celebration overlay only first time
+  if (isNewSpidy && !localStorage.getItem('sb_spidy_celebrated')) {
+    setTimeout(() => {
+      document.getElementById('celebration').classList.add('show');
+      localStorage.setItem('sb_spidy_celebrated', '1');
+    }, 800);
+  }
+}
+
+function shareSpidy() {
+  const text = encodeURIComponent(
+    'I just became a Digital Spidy on ScaleBiz Academy — the top 3% badge for mastering Performance + Influencer Marketing.\n\nLive classes + scored tests. Not just a certificate.\n\nscalebizacademy.com\n\n#DigitalSpidy #ScaleBizAcademy #PerformanceMarketing #InfluencerMarketing'
+  );
+  window.open('https://www.linkedin.com/shareArticle?mini=true&url=https://scalebizacademy.com&summary=' + text, '_blank');
+}
+
+</script>
+</body>
+</html>

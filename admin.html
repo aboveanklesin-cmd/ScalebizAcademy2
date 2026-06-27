@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — ScaleBiz Academy</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--lime:#C8F135;--purple:#6B4EFF;--coral:#FF5C3A;--ink:#0F0E17;--paper:#FAFAF7;--mid:#F0EFE8;--muted:#6B6A63;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#0F0E17;color:#FAFAF7;font-family:'Nunito',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;border-bottom:1.5px solid #1e1d2e;}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;color:var(--lime);}
+    .nav-badge{font-family:'Space Mono',monospace;font-size:0.65rem;background:#FF5C3A;color:#fff;padding:3px 10px;border-radius:20px;}
+    .btn-logout{background:none;border:1px solid #2E2D3D;border-radius:100px;padding:0.4rem 1rem;font-family:'Space Mono',monospace;font-size:0.7rem;cursor:pointer;color:#9A9890;transition:background 0.15s;}
+    .btn-logout:hover{background:#1A1929;}
+
+    .main{max-width:1100px;margin:0 auto;padding:2rem 5%;}
+
+    /* LOGIN */
+    .login-wrap{max-width:400px;margin:4rem auto;background:#16151F;border:1.5px solid #2E2D3D;border-radius:20px;padding:2rem;}
+    .login-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;color:var(--lime);margin-bottom:0.5rem;}
+    .login-sub{font-size:0.8rem;color:#9A9890;margin-bottom:1.5rem;font-family:'Space Mono',monospace;}
+    .login-input{width:100%;padding:0.7rem 1rem;background:#0F0E17;border:1.5px solid #2E2D3D;border-radius:12px;color:#FAFAF7;font-family:'Nunito',sans-serif;font-size:0.9rem;outline:none;margin-bottom:0.75rem;}
+    .login-input:focus{border-color:var(--purple);}
+    .login-btn{width:100%;background:var(--purple);color:#FAFAF7;font-family:'Bebas Neue',sans-serif;letter-spacing:0.06em;font-size:1rem;padding:0.75rem;border-radius:100px;border:none;cursor:pointer;transition:background 0.15s;}
+    .login-btn:hover{background:#5038EE;}
+
+    /* TABS */
+    .tabs{display:flex;gap:0;border-bottom:1.5px solid #2E2D3D;margin-bottom:2rem;}
+    .tab{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.04em;padding:0.75rem 1.5rem;cursor:pointer;color:#9A9890;border-bottom:2.5px solid transparent;transition:all 0.15s;}
+    .tab.active{color:var(--lime);border-bottom-color:var(--lime);}
+
+    /* SECTION HEADER */
+    .section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:10px;}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.04em;color:#FAFAF7;}
+
+    /* CARDS */
+    .card{background:#16151F;border:1.5px solid #2E2D3D;border-radius:16px;padding:1.25rem;margin-bottom:10px;}
+    .card:hover{border-color:#3C3489;}
+
+    /* STUDENT ROW */
+    .student-row{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+    .student-avatar{width:40px;height:40px;border-radius:50%;background:#3C3489;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--lime);flex-shrink:0;}
+    .student-name{font-weight:700;font-size:0.95rem;color:#FAFAF7;}
+    .student-email{font-family:'Space Mono',monospace;font-size:0.65rem;color:#9A9890;margin-top:2px;}
+    .student-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+    .meta-chip{font-family:'Space Mono',monospace;font-size:0.62rem;padding:2px 9px;border-radius:20px;border:1px solid #2E2D3D;color:#9A9890;}
+    .meta-chip.paid{background:#C8F13515;border-color:#C8F13533;color:#C8F135;}
+    .meta-chip.free{background:#FF5C3A15;border-color:#FF5C3A33;color:#FF5C3A;}
+
+    /* ATTENDANCE BUTTONS */
+    .attend-section{margin-top:12px;padding-top:12px;border-top:1px solid #2E2D3D;}
+    .attend-title{font-family:'Space Mono',monospace;font-size:0.65rem;color:#9A9890;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+    .attend-grid{display:flex;gap:8px;flex-wrap:wrap;}
+    .attend-btn{font-family:'Space Mono',monospace;font-size:0.65rem;padding:5px 12px;border-radius:20px;cursor:pointer;border:1px solid #2E2D3D;background:transparent;color:#9A9890;transition:all 0.15s;display:flex;align-items:center;gap:5px;}
+    .attend-btn:hover{border-color:var(--purple);color:#AFA9EC;background:#1A1929;}
+    .attend-btn.attended{background:#C8F13515;border-color:#C8F13533;color:#C8F135;}
+    .attend-btn.attended:hover{background:#FF5C3A15;border-color:#FF5C3A33;color:#FF5C3A;}
+
+    /* PAYMENT STATUS */
+    .payment-section{margin-top:10px;padding-top:10px;border-top:1px solid #2E2D3D;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .payment-label{font-family:'Space Mono',monospace;font-size:0.65rem;color:#9A9890;}
+    .payment-select{background:#0F0E17;border:1px solid #2E2D3D;border-radius:8px;color:#FAFAF7;font-family:'Space Mono',monospace;font-size:0.7rem;padding:4px 10px;cursor:pointer;outline:none;}
+    .payment-save{font-family:'Space Mono',monospace;font-size:0.65rem;padding:4px 12px;border-radius:20px;background:var(--purple);color:#fff;border:none;cursor:pointer;transition:opacity 0.15s;}
+    .payment-save:hover{opacity:0.85;}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:2rem;}
+    .stat-card{background:#16151F;border:1.5px solid #2E2D3D;border-radius:14px;padding:1rem;text-align:center;}
+    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.03em;color:var(--lime);}
+    .stat-lbl{font-family:'Space Mono',monospace;font-size:0.6rem;color:#9A9890;text-transform:uppercase;margin-top:2px;}
+
+    /* NOTIFICATION */
+    .notif{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--purple);color:#fff;font-family:'Space Mono',monospace;font-size:0.75rem;padding:0.75rem 1.25rem;border-radius:12px;z-index:1000;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none;}
+    .notif.show{opacity:1;transform:translateY(0);}
+
+    .loading{text-align:center;padding:3rem;font-family:'Space Mono',monospace;font-size:0.75rem;color:#9A9890;}
+    .empty{text-align:center;padding:2rem;font-family:'Space Mono',monospace;font-size:0.75rem;color:#9A9890;}
+
+    @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.student-row{flex-direction:column;}.payment-section{flex-direction:column;align-items:flex-start;}}
+  </style>
+</head>
+<body>
+
+<!-- NOTIFICATION TOAST -->
+<div class="notif" id="notif"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">ScaleBiz Academy · Restricted access</div>
+    <input class="login-input" type="email" id="adminEmail" placeholder="Admin email"/>
+    <input class="login-input" type="password" id="adminPass" placeholder="Password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    <div id="loginError" style="font-size:0.75rem;color:var(--coral);margin-bottom:0.75rem;display:none;"></div>
+    <button class="login-btn" onclick="adminLogin()">Sign in →</button>
+  </div>
+</div>
+
+<!-- MAIN PANEL -->
+<div id="mainPanel" style="display:none;">
+  <nav>
+    <div>
+      <div class="nav-brand">🕷️ ScaleBiz Academy</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="nav-badge">Admin</span>
+      <button class="btn-logout" onclick="adminLogout()">Log out</button>
+    </div>
+  </nav>
+
+  <div class="main">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val" id="totalStudents">0</div><div class="stat-lbl">Total students</div></div>
+      <div class="stat-card"><div class="stat-val" id="paidStudents">0</div><div class="stat-lbl">Paid students</div></div>
+      <div class="stat-card"><div class="stat-val" id="badgesAwarded">0</div><div class="stat-lbl">Badges awarded</div></div>
+      <div class="stat-card"><div class="stat-val" id="spidyCount">0</div><div class="stat-lbl">Digital Spidys</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('attendance')">Mark Attendance</div>
+      <div class="tab" onclick="switchTab('payments')">Update Payments</div>
+    </div>
+
+    <!-- ATTENDANCE TAB -->
+    <div id="tabAttendance">
+      <div class="section-hdr">
+        <div class="section-title">Mark Class Attendance</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.7rem;color:#9A9890;">Tick attended modules to unlock tests</div>
+      </div>
+      <div id="studentListAttend"><div class="loading">Loading students...</div></div>
+    </div>
+
+    <!-- PAYMENTS TAB -->
+    <div id="tabPayments" style="display:none;">
+      <div class="section-hdr">
+        <div class="section-title">Update Payment Status</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.7rem;color:#9A9890;">Change after confirming Razorpay payment</div>
+      </div>
+      <div id="studentListPayments"><div class="loading">Loading students...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+// ── IMPORTANT: Set your admin email here ─────────────────────────
+const ADMIN_EMAIL = 'YOUR_ADMIN_EMAIL@gmail.com'; // ← replace with your email
+
+const MODULES = [
+  { id:'mod1', name:'KPIs & Marketing Funnels',       track:'Performance', emoji:'📡' },
+  { id:'mod2', name:'Meta Ads — Targeting & Creative', track:'Performance', emoji:'📱' },
+  { id:'mod3', name:'Google Ads & Attribution',        track:'Performance', emoji:'🎯' },
+  { id:'mod4', name:'ROAS Optimisation & Budgeting',   track:'Influencer',  emoji:'💰' },
+  { id:'mod5', name:'Influencer Tiers & Briefs',       track:'Influencer',  emoji:'🤝' },
+  { id:'mod6', name:'Viral Campaign Strategy',         track:'Influencer',  emoji:'🔥' },
+];
+
+let allStudents = [];
+let allAttendance = [];
+let allBadges = [];
+
+// ── Admin login ───────────────────────────────────────────────────
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const err   = document.getElementById('loginError');
+  err.style.display = 'none';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+
+  // Check if this email is the admin
+  if (email !== ADMIN_EMAIL) {
+    await sb.auth.signOut();
+    err.textContent = 'Access denied. Admin only.';
+    err.style.display = 'block';
+    return;
+  }
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainPanel').style.display   = 'block';
+  loadData();
+}
+
+async function adminLogout() {
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// ── Check existing session ────────────────────────────────────────
+async function checkSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session && session.user.email === ADMIN_EMAIL) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainPanel').style.display   = 'block';
+    loadData();
+  }
+}
+
+// ── Load all data ─────────────────────────────────────────────────
+async function loadData() {
+  const [{ data: students }, { data: attendance }, { data: badges }] = await Promise.all([
+    sb.from('students').select('*').order('created_at', { ascending: false }),
+    sb.from('attendance').select('*'),
+    sb.from('badges').select('*'),
+  ]);
+
+  allStudents   = students   || [];
+  allAttendance = attendance || [];
+  allBadges     = badges     || [];
+
+  // Stats
+  const paid   = allStudents.filter(s => s.payment_status && s.payment_status !== 'free');
+  const spidys = allBadges.filter(b => b.badge_name === 'Digital Spidy');
+  document.getElementById('totalStudents').textContent = allStudents.length;
+  document.getElementById('paidStudents').textContent  = paid.length;
+  document.getElementById('badgesAwarded').textContent = allBadges.length;
+  document.getElementById('spidyCount').textContent    = spidys.length;
+
+  renderAttendance();
+  renderPayments();
+}
+
+// ── ATTENDANCE TAB ────────────────────────────────────────────────
+function renderAttendance() {
+  const container = document.getElementById('studentListAttend');
+  if (!allStudents.length) { container.innerHTML = '<div class="empty">No students yet.</div>'; return; }
+
+  const paidStudents = allStudents.filter(s => s.payment_status && s.payment_status !== 'free');
+  if (!paidStudents.length) { container.innerHTML = '<div class="empty">No paid students yet. Attendance can only be marked for students who have purchased a course.</div>'; return; }
+
+  container.innerHTML = '';
+  paidStudents.forEach(s => {
+    const initials    = (s.first_name[0] + s.last_name[0]).toUpperCase();
+    const sAttendance = allAttendance.filter(a => a.student_id === s.id).map(a => a.module_id);
+    const hasPerf     = ['perf_only','both'].includes(s.payment_status);
+    const hasInf      = ['inf_only','both'].includes(s.payment_status);
+
+    const visibleMods = MODULES.filter(m =>
+      (m.track === 'Performance' && hasPerf) || (m.track === 'Influencer' && hasInf)
+    );
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="student-row">
+        <div class="student-avatar">${initials}</div>
+        <div style="flex:1;">
+          <div class="student-name">${s.first_name} ${s.last_name}</div>
+          <div class="student-email">${s.email}</div>
+          <div class="student-meta">
+            <span class="meta-chip paid">${s.payment_status}</span>
+            <span class="meta-chip">${allBadges.filter(b=>b.student_id===s.id).length} badges</span>
+            <span class="meta-chip">${sAttendance.length}/${visibleMods.length} modules attended</span>
+          </div>
+        </div>
+      </div>
+      <div class="attend-section">
+        <div class="attend-title">Mark attended modules</div>
+        <div class="attend-grid" id="mods_${s.id}"></div>
+      </div>`;
+    container.appendChild(card);
+
+    const modGrid = card.querySelector(`#mods_${s.id}`);
+    visibleMods.forEach(mod => {
+      const isAttended = sAttendance.includes(mod.id);
+      const btn = document.createElement('button');
+      btn.className  = 'attend-btn' + (isAttended ? ' attended' : '');
+      btn.id         = `btn_${s.id}_${mod.id}`;
+      btn.innerHTML  = (isAttended ? '✅ ' : '') + mod.emoji + ' ' + mod.name;
+      btn.title      = isAttended ? 'Click to remove attendance' : 'Click to mark as attended';
+      btn.onclick    = () => toggleAttendance(s.id, mod.id, btn);
+      modGrid.appendChild(btn);
+    });
+  });
+}
+
+async function toggleAttendance(studentId, moduleId, btn) {
+  const isAttended = btn.classList.contains('attended');
+
+  if (isAttended) {
+    // Remove attendance
+    await sb.from('attendance').delete()
+      .eq('student_id', studentId).eq('module_id', moduleId);
+    btn.classList.remove('attended');
+    btn.innerHTML = btn.innerHTML.replace('✅ ', '');
+    showNotif('Attendance removed');
+    // Update local data
+    allAttendance = allAttendance.filter(a => !(a.student_id === studentId && a.module_id === moduleId));
+  } else {
+    // Add attendance
+    const { error } = await sb.from('attendance').upsert({
+      student_id:  studentId,
+      module_id:   moduleId,
+      attended_at: new Date().toISOString(),
+    }, { onConflict: 'student_id,module_id' });
+    if (!error) {
+      btn.classList.add('attended');
+      btn.innerHTML = '✅ ' + btn.innerHTML;
+      showNotif('✅ Attendance marked — student can now take the test');
+      allAttendance.push({ student_id: studentId, module_id: moduleId });
+    } else {
+      showNotif('Error: ' + error.message);
+    }
+  }
+}
+
+// ── PAYMENTS TAB ──────────────────────────────────────────────────
+function renderPayments() {
+  const container = document.getElementById('studentListPayments');
+  if (!allStudents.length) { container.innerHTML = '<div class="empty">No students yet.</div>'; return; }
+
+  container.innerHTML = '';
+  allStudents.forEach(s => {
+    const initials = (s.first_name[0] + (s.last_name?.[0] || '')).toUpperCase();
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="student-row">
+        <div class="student-avatar">${initials}</div>
+        <div style="flex:1;">
+          <div class="student-name">${s.first_name} ${s.last_name || ''}</div>
+          <div class="student-email">${s.email || '—'}</div>
+          <div class="student-meta">
+            <span class="meta-chip ${s.payment_status !== 'free' ? 'paid' : 'free'}">${s.payment_status || 'free'}</span>
+            <span class="meta-chip">${new Date(s.created_at).toLocaleDateString('en-IN')}</span>
+          </div>
+        </div>
+      </div>
+      <div class="payment-section">
+        <div class="payment-label">Payment status:</div>
+        <select class="payment-select" id="pay_${s.id}">
+          <option value="free"      ${s.payment_status==='free'      ?'selected':''}>free</option>
+          <option value="perf_only" ${s.payment_status==='perf_only' ?'selected':''}>perf_only (₹1,000)</option>
+          <option value="inf_only"  ${s.payment_status==='inf_only'  ?'selected':''}>inf_only (₹1,200)</option>
+          <option value="both"      ${s.payment_status==='both'      ?'selected':''}>both (₹1,500)</option>
+        </select>
+        <button class="payment-save" onclick="savePayment('${s.id}')">Save →</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+async function savePayment(studentId) {
+  const newStatus = document.getElementById('pay_' + studentId).value;
+  const { error } = await sb.from('students').update({
+    payment_status: newStatus,
+    purchased_at:   new Date().toISOString(),
+  }).eq('id', studentId);
+
+  if (error) { showNotif('Error: ' + error.message); return; }
+
+  // Update local data
+  const s = allStudents.find(x => x.id === studentId);
+  if (s) s.payment_status = newStatus;
+  showNotif('✅ Payment status updated — student levels will unlock on next refresh');
+  renderPayments();
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tabAttendance').style.display = tab === 'attendance' ? 'block' : 'none';
+  document.getElementById('tabPayments').style.display   = tab === 'payments'   ? 'block' : 'none';
+  event.target.classList.add('active');
+}
+
+// ── Toast notification ────────────────────────────────────────────
+function showNotif(msg) {
+  const notif = document.getElementById('notif');
+  notif.textContent = msg;
+  notif.classList.add('show');
+  setTimeout(() => notif.classList.remove('show'), 3000);
+}
+
+checkSession();
+</script>
+</body>
+</html>
