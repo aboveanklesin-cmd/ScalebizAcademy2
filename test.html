@@ -105,7 +105,7 @@
     </svg>
     <div class="nav-logo-text"><span>ScaleBiz</span><span>Academy</span></div>
   </a>
-  <a href="/dashboard" class="nav-back">← Back to dashboard</a>
+  <a href="/dashboard.html" class="nav-back">← Back to dashboard</a>
 </nav>
 
 <div class="loading-screen" id="loadingScreen">
@@ -119,7 +119,7 @@
     <div class="locked-icon">🔒</div>
     <div class="locked-title">This level is locked</div>
     <div class="locked-msg" id="lockedMsg">Purchase the course to unlock this challenge and earn your badge.</div>
-    <a href="/dashboard"><button class="btn-primary">Go to dashboard →</button></a>
+    <a href="/dashboard.html"><button class="btn-primary">Go to dashboard →</button></a>
   </div>
 
   <!-- TEST STATE -->
@@ -163,7 +163,7 @@
     </div>
     <div class="result-msg" id="resultMsg"></div>
     <div class="result-actions">
-      <button class="btn-lime" id="resultCTA" onclick="window.location.href='/dashboard'">Go to dashboard →</button>
+      <button class="btn-lime" id="resultCTA" onclick="window.location.href='/dashboard.html'">Go to dashboard →</button>
       <button class="btn-outline" id="retryBtn" onclick="retryTest()" style="display:none;background:transparent;color:#B4B2A9;border-color:#3C3489;">Retry in 24h</button>
     </div>
   </div>
@@ -210,17 +210,17 @@ async function init() {
   }
 
   // Check if already passed
-  const { data: attempts } = await sb
-    .from('mcq_attempts')
+  const { data: priorProgress } = await sb
+    .from('progress')
     .select('*')
     .eq('student_id', s.id)
-    .eq('level', level)
-    .eq('passed', true)
+    .eq('challenge_name', LEVEL_META[level].badge)
+    .eq('status', 'passed')
     .limit(1);
 
-  if(attempts && attempts.length > 0) {
+  if(priorProgress && priorProgress.length > 0) {
     // Already passed — show result directly
-    showResult(true, attempts[0].score, attempts[0].total, true);
+    showResult(true, null, null, true, priorProgress[0].score);
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
     return;
@@ -319,14 +319,11 @@ function markAnswer(idx, chosen, reveal) {
   const optEls = document.querySelectorAll('.option');
   optEls.forEach((el, i) => {
     const letter = ['a','b','c','d'][i];
-    // Only lock clicks when revealing correct/wrong (after submit)
     if(reveal) {
       el.onclick = null;
       if(letter === q.correct) el.classList.add('reveal-correct');
       else if(letter === chosen) el.classList.add('wrong');
     } else {
-      // Still selectable — just highlight chosen option
-      el.classList.remove('selected');
       if(letter === chosen) el.classList.add('selected');
     }
   });
@@ -349,17 +346,36 @@ async function submitTest() {
   questions.forEach((q, i) => { if(answers[i] === q.correct) correct++; });
   const total = questions.length;
   const passed = correct / total >= PASS_MARK;
+  const scorePct = Math.round((correct/total)*100);
 
-  // Save attempt
-  const { error: attErr } = await sb.from('mcq_attempts').insert({
-    student_id: student.id,
-    track: LEVEL_META[level].track,
-    level: level,
-    score: correct,
-    total: total,
-    passed: passed,
-    answers: answers,
-  });
+  // Save / update progress row for this challenge
+  const { data: existing } = await sb
+    .from('progress')
+    .select('id, attempts')
+    .eq('student_id', student.id)
+    .eq('challenge_name', LEVEL_META[level].badge)
+    .limit(1);
+
+  if(existing && existing.length > 0) {
+    await sb.from('progress').update({
+      status: passed ? 'passed' : 'failed',
+      score: scorePct,
+      attempts: (existing[0].attempts || 0) + 1,
+      last_attempted_at: new Date().toISOString(),
+      completed_at: passed ? new Date().toISOString() : null,
+    }).eq('id', existing[0].id);
+  } else {
+    await sb.from('progress').insert({
+      student_id: student.id,
+      challenge_name: LEVEL_META[level].badge,
+      track: LEVEL_META[level].track,
+      status: passed ? 'passed' : 'failed',
+      score: scorePct,
+      attempts: 1,
+      last_attempted_at: new Date().toISOString(),
+      completed_at: passed ? new Date().toISOString() : null,
+    });
+  }
 
   if(passed) {
     // Award badge
@@ -396,22 +412,22 @@ async function submitTest() {
   showResult(passed, correct, total, false);
 }
 
-function showResult(passed, correct, total, alreadyPassed) {
+function showResult(passed, correct, total, alreadyPassed, priorScorePct) {
   document.getElementById('testScreen').style.display = 'none';
   const card = document.getElementById('resultCard');
   card.classList.add('show');
 
-  const pct = Math.round((correct/total)*100);
-
   if(alreadyPassed) {
     document.getElementById('resultEmoji').textContent = '🏅';
     document.getElementById('resultTitle').textContent = 'Already passed!';
-    document.getElementById('resultScore').textContent = correct + ' / ' + total + ' correct · ' + pct + '%';
+    document.getElementById('resultScore').textContent = (priorScorePct != null ? priorScorePct + '%' : 'Passed');
     document.getElementById('resultMsg').textContent = 'You have already completed this level. Head to your dashboard to continue your journey.';
     document.getElementById('resultBadge').style.display = 'block';
     document.getElementById('resultBadgeName').textContent = LEVEL_META[level].badge;
     return;
   }
+
+  const pct = Math.round((correct/total)*100);
 
   if(passed) {
     document.getElementById('resultEmoji').textContent = '🎯';
@@ -434,7 +450,7 @@ function showResult(passed, correct, total, alreadyPassed) {
 }
 
 function retryTest() {
-  window.location.href = '/test?level=' + level;
+  window.location.href = '/test.html?level=' + level;
 }
 
 init();
